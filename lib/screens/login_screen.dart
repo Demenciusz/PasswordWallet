@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, duplicate_ignore, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:bsi/domain/state_controller.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -27,14 +28,17 @@ class LoginScreen extends StatelessWidget {
                   child: TextField(
                     maxLength: 6,
                     decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Login',
-                        counterText: '',
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20))),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      hintText: 'Login',
+                      counterText: '',
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   )),
             ),
             Padding(
@@ -60,7 +64,9 @@ class LoginScreen extends StatelessWidget {
                 height: 50,
                 width: 200,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    StateController().LoginUser(context);
+                  },
                   child: Text(
                     'Sign in',
                     style: TextStyle(fontSize: 30, color: Colors.black),

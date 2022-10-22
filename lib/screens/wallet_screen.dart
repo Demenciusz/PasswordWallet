@@ -1,3 +1,4 @@
+import 'package:bsi/domain/state_controller.dart';
 import 'package:flutter/material.dart';
 
 class WalletScreen extends StatelessWidget {
@@ -39,7 +40,18 @@ class WalletScreen extends StatelessWidget {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [const Text('Dodaj')],
+        children: [
+          const Text('Dodaj'),
+          Row(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    StateController().LogoutUser(context);
+                  },
+                  child: Text('XDDDDDDDDDDDDDDDDDDDDDDDDDD'))
+            ],
+          )
+        ],
       ),
     );
   }
