@@ -1,4 +1,3 @@
-import 'package:bsi/domain/state_controller.dart';
 import 'package:flutter/material.dart';
 
 class WalletScreen extends StatelessWidget {
@@ -45,10 +44,7 @@ class WalletScreen extends StatelessWidget {
           Row(
             children: [
               TextButton(
-                  onPressed: () {
-                    StateController().LogoutUser(context);
-                  },
-                  child: Text('XDDDDDDDDDDDDDDDDDDDDDDDDDD'))
+                  onPressed: () {}, child: Text('XDDDDDDDDDDDDDDDDDDDDDDDDDD'))
             ],
           )
         ],

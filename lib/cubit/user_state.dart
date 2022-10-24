@@ -1,8 +1,26 @@
-part of 'user_cubit.dart';
+import 'package:bsi/data/w_data.dart';
+import 'package:equatable/equatable.dart';
 
-@immutable
-abstract class UserState {}
+abstract class UserState extends Equatable {}
 
-class UserLoggedIn extends UserState {}
+class UserLogin extends UserState {
+  UserLogin(
+    this.user,
+    this.list,
+  );
+  final User user;
+  final List<Password> list;
+  @override
+  List<Object?> get props => [user, list];
+}
 
-class UserLoggedOut extends UserState {}
+class UserRegistering extends UserState {
+  UserRegistering();
+  @override
+  List<Object?> get props => [];
+}
+
+class UserLoggedOut extends UserState {
+  UserLoggedOut();
+  List<Object?> get props => [];
+}

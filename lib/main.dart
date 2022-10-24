@@ -1,10 +1,11 @@
 import 'package:bsi/cubit/user_cubit.dart';
-import 'package:bsi/routing.dart';
 import 'package:bsi/screens/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bsi/screens/login_screen.dart';
 import 'package:bsi/screens/register_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'cubit/user_state.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,9 +17,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    RouteGenerator router = RouteGenerator();
     return MaterialApp(
-      onGenerateRoute: router.generateRoute,
+      home: BlocProvider(
+        create: (context) => UserCubit(),
+        child: BuilderWidget(),
+      ),
     );
   }
 }
@@ -29,15 +32,20 @@ class BuilderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserCubit, UserState>(
-      builder: ((context, state) {
+      builder: (context, state) {
         if (state is UserLoggedOut) {
-          return LoginScreen();
+          return const LoginScreen();
         }
         if (state is UserLoggedIn) {
           return const WalletScreen();
         }
-        return LoginScreen();
-      }),
+        if (state is UserRegistering) {
+          return const RegisterScreen();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }
+
+class UserLoggedIn {}

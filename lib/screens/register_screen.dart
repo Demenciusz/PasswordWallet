@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/user_cubit.dart';
+import '../cubit/user_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -96,19 +100,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(20))),
                   )),
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                'SHA512?',
-                style: TextStyle(fontSize: 20),
-              ),
-              Checkbox(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'SHA512?',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Checkbox(
                   value: isChecked,
                   onChanged: (bool? value) {
                     setState(() {
                       isChecked = value!;
                     });
-                  })
-            ])
+                  },
+                )
+              ],
+            ),
+            TextButton(onPressed: () {}, child: Text('Zarejestruj')),
+            TextButton(
+                onPressed: () {
+                  BlocProvider.of<UserCubit>(context).goToLogin();
+                },
+                child: Text('Powrót do logowania'))
           ],
         ),
       ),
