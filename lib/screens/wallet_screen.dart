@@ -1,4 +1,6 @@
+import 'package:bsi/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -6,48 +8,66 @@ class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wallet'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Dodawanie hasła'),
-              content: Column(
-                children: [
-                  Text('Nazwa:'),
-                  TextField(),
-                  Text('Login:'),
-                  TextField(),
-                  Text('Hasło:'),
-                  TextField()
-                ],
-              ),
-              actions: [
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+          decoration: const BoxDecoration(
+            color: Colors.red,
+          ),
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: 50,
+          child: TextButton(
+            child: const Text(
+              'Add Password',
+              style: TextStyle(fontSize: 30, color: Colors.black),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Dodawanie hasła'),
+                  content: Column(
+                    children: const [
+                      Text('Nazwa:'),
+                      TextField(),
+                      Text('Login:'),
+                      TextField(),
+                      Text('Hasło:'),
+                      TextField()
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.add))
+                  ],
+                ),
+              );
+            },
+          )),
+      body: SizedBox.expand(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Dodaj'),
                 TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.add))
+                  onPressed: () {
+                    BlocProvider.of<UserCubit>(context).goToLogin();
+                  },
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 30, color: Colors.black),
+                  ),
+                )
               ],
             ),
-          );
-        },
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Dodaj'),
-          Row(
-            children: [
-              TextButton(
-                  onPressed: () {}, child: Text('XDDDDDDDDDDDDDDDDDDDDDDDDDD'))
-            ],
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

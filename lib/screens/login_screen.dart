@@ -5,8 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late final TextEditingController loginText;
+
+  late final TextEditingController passwordText1;
+
+  @override
+  void initState() {
+    super.initState();
+    loginText = TextEditingController();
+    passwordText1 = TextEditingController();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +46,7 @@ class LoginScreen extends StatelessWidget {
                   height: 50,
                   width: 200,
                   child: TextField(
+                    controller: loginText,
                     maxLength: 6,
                     decoration: InputDecoration(
                       filled: true,
@@ -50,6 +68,7 @@ class LoginScreen extends StatelessWidget {
                 height: 50,
                 width: 200,
                 child: TextField(
+                  controller: passwordText1,
                   maxLength: 6,
                   decoration: InputDecoration(
                     filled: true,
@@ -67,15 +86,26 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-                height: 50,
-                width: 200,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Sign in',
-                    style: TextStyle(fontSize: 30, color: Colors.black),
-                  ),
-                )),
+              height: 50,
+              width: 200,
+              child: TextButton(
+                onPressed: () {
+                  final login = loginText.text;
+                  final password = passwordText1.text;
+                  print(login);
+                  print(password);
+                  BlocProvider.of<UserCubit>(context).login(
+                    login: login,
+                    password: password,
+                    context: context,
+                  );
+                },
+                child: const Text(
+                  'Sign in',
+                  style: TextStyle(fontSize: 30, color: Colors.black),
+                ),
+              ),
+            ),
             SizedBox(
               height: 50,
               width: 200,
@@ -83,7 +113,7 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () {
                   BlocProvider.of<UserCubit>(context).goToRegister();
                 },
-                child: Text(
+                child: const Text(
                   'Register',
                   style: TextStyle(fontSize: 30, color: Colors.black),
                 ),

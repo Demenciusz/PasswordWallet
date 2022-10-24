@@ -36,7 +36,7 @@ class BuilderWidget extends StatelessWidget {
         if (state is UserLoggedOut) {
           return const LoginScreen();
         }
-        if (state is UserLoggedIn) {
+        if (state is UserLogin) {
           return const WalletScreen();
         }
         if (state is UserRegistering) {
@@ -47,5 +47,3 @@ class BuilderWidget extends StatelessWidget {
     );
   }
 }
-
-class UserLoggedIn {}

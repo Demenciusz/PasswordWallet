@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,14 +17,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isChecked = false;
   late final TextEditingController loginText;
   late final TextEditingController passwordText1;
-  late final TextEditingController passwordText2;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loginText = TextEditingController();
     passwordText1 = TextEditingController();
-    passwordText2 = TextEditingController();
   }
 
   @override
@@ -34,7 +32,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('REJESTRACJA'),
+            const Text(
+              'REJESTRACJA',
+              style: TextStyle(fontSize: 30, color: Colors.black),
+            ),
             Padding(
               padding: const EdgeInsets.all(8),
               child: SizedBox(
@@ -81,29 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  height: 50,
-                  width: 200,
-                  child: TextField(
-                    controller: passwordText2,
-                    maxLength: 16,
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Password',
-                        counterText: '',
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20))),
-                  )),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'SHA512?',
                   style: TextStyle(fontSize: 20),
                 ),
@@ -117,12 +99,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 )
               ],
             ),
-            TextButton(onPressed: () {}, child: Text('Zarejestruj')),
-            TextButton(
+            SizedBox(
+              height: 50,
+              width: 200,
+              child: TextButton(
+                onPressed: () {
+                  final login = loginText.text;
+                  final password = passwordText1.text;
+                  BlocProvider.of<UserCubit>(context).register(
+                    login: login,
+                    password: password,
+                    sha: isChecked,
+                    context: context,
+                  );
+                },
+                child: const Text(
+                  'Register',
+                  style: TextStyle(fontSize: 30, color: Colors.black),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 50,
+              width: 200,
+              child: TextButton(
                 onPressed: () {
                   BlocProvider.of<UserCubit>(context).goToLogin();
                 },
-                child: Text('Powrót do logowania'))
+                child: const Text(
+                  'Login',
+                  style: TextStyle(fontSize: 30, color: Colors.black),
+                ),
+              ),
+            )
           ],
         ),
       ),
