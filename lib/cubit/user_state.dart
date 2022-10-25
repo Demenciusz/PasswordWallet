@@ -24,3 +24,23 @@ class UserLoggedOut extends UserState {
   UserLoggedOut();
   List<Object?> get props => [];
 }
+
+class UserAddingPass extends UserState {
+  UserAddingPass(
+    this.user,
+    this.list,
+  );
+  final User user;
+  final List<Password> list;
+  List<Object?> get props => [user, list];
+}
+
+class UserRef extends UserState {
+  UserRef(
+    this.user,
+    this.list,
+  );
+  final User user;
+  final List<Password> list;
+  List<Object?> get props => [user, list];
+}

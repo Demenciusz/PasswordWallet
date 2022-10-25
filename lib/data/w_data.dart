@@ -60,6 +60,10 @@ class WDatabase extends _$WDatabase {
     });
   }
 
+  Future<int> removePasswordById(int id) async {
+    return await (delete(passwords)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
   Future<List<User>> getAllUsers() {
     return (select(users)).get();
   }

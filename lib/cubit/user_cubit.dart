@@ -14,6 +14,26 @@ import 'package:bsi/constant.dart';
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserLoggedOut());
 
+  User? get userData {
+    if (state is UserLogin) {
+      return (state as UserLogin).user;
+    } else if (state is UserAddingPass) {
+      return (state as UserAddingPass).user;
+    } else if (state is UserRef) {
+      return (state as UserRef).user;
+    } else
+      return null;
+  }
+
+  List<Password>? get userList {
+    if (state is UserLogin) {
+      return (state as UserLogin).list;
+    } else if (state is UserAddingPass) {
+      return (state as UserAddingPass).list;
+    }
+    return null;
+  }
+
   WDatabase database = WDatabase();
 
   Future<void> login({
@@ -129,5 +149,60 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> goToLogin() async {
     emit(UserLoggedOut());
+  }
+
+  Future<void> addPassPage() async {
+    emit(UserAddingPass(userData!, userList!));
+  }
+
+  Future<void> ref() async {
+    final passwords = await database.getAllUserPasswords(userData!.id);
+    emit(UserLogin(userData!, passwords));
+  }
+
+  Future<void> addPassword({
+    required String login,
+    required String password,
+    required String web,
+    required String description,
+    required BuildContext context,
+  }) async {
+    try {
+      if (login.isEmpty || password.isEmpty) {
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('ERROR'),
+            content: const Text('Login or password is epmty'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              )
+            ],
+          ),
+        );
+        throw Exception();
+      }
+      Encrypter.encryptPass(password, userData!.salt);
+      final comp = PasswordsCompanion(
+        login: Value(login),
+        password: Value(Encrypter.encryptPass(password, userData!.salt)),
+        web: Value(web),
+        description: Value(description),
+        userId: Value(userData!.id),
+      );
+      await database.addPassword(comp);
+      final passwords = await database.getAllUserPasswords(userData!.id);
+      emit(UserLogin(userData!, passwords));
+    } catch (e) {
+      print('Nie dodano hasła heh');
+    }
+  }
+
+  Future<void> deletePassword(int id) async {
+    await database.removePasswordById(id);
+
+    emit(UserRef(userData!, userList!));
   }
 }

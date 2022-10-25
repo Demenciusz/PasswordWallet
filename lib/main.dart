@@ -1,4 +1,6 @@
 import 'package:bsi/cubit/user_cubit.dart';
+import 'package:bsi/screens/add_pass_screen.dart';
+import 'package:bsi/screens/ref.dart';
 import 'package:bsi/screens/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bsi/screens/login_screen.dart';
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: BlocProvider(
         create: (context) => UserCubit(),
-        child: BuilderWidget(),
+        child: const BuilderWidget(),
       ),
     );
   }
@@ -41,6 +43,12 @@ class BuilderWidget extends StatelessWidget {
         }
         if (state is UserRegistering) {
           return const RegisterScreen();
+        }
+        if (state is UserAddingPass) {
+          return const AddPassScreen();
+        }
+        if (state is UserRef) {
+          return const ref();
         }
         return const LoginScreen();
       },
