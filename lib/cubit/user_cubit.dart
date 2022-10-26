@@ -209,9 +209,9 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> deletePassword(int id) async {
     await database.removePasswordById(id);
-    final passwords = await database.getAllUserPasswords(userData!.id);
-    //emit(UserRef(userData!, passwords));
-    emit(UserLogin(userData!, passwords));
+    database.getAllUserPasswords(userData!.id).then((passwords) {
+      emit(UserLogin(userData!, passwords));
+    });
   }
 
   Future<void> changeUserPassword({

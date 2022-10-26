@@ -19,28 +19,16 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   bool nom = true;
+  UserCubit get userCubit => BlocProvider.of<UserCubit>(context);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    String salt = BlocProvider.of<UserCubit>(context).userData!.salt;
-    List<Password>? list = BlocProvider.of<UserCubit>(context).userList;
-    final visable = <bool>[];
-    list?.forEach(
-      (element) {
-        visable.add(false);
-      },
-    );
-    void deletePass() {
-      list = BlocProvider.of<UserCubit>(context).userList;
-      salt = BlocProvider.of<UserCubit>(context).userData!.salt;
-      visable.clear();
-      list?.forEach(
-        (element) {
-          visable.add(false);
-        },
-      );
-    }
-
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
@@ -68,64 +56,84 @@ class _WalletScreenState extends State<WalletScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: list!.length != 0
-                    ? BlocBuilder<UserCubit, UserState>(
-                        builder: (context, state) {
-                          return ListView.builder(
-                            itemCount: list!.length,
-                            itemBuilder: (context, index) {
-                              return MyListView(
-                                login: list![index].login,
-                                web: list![index].web,
-                                description: list![index].description,
-                                password: list![index].password,
-                                visable: visable[index],
-                                salt: salt,
-                                id: list![index].id,
-                                func: () {
-                                  setState(() {
-                                    BlocProvider.of<UserCubit>(context)
-                                        .deletePassword(list![index].id);
-                                    deletePass();
-                                  });
-                                },
-                              );
-                            },
-                          );
-                        },
-                      )
-                    : const Text(''),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      BlocProvider.of<UserCubit>(context).goToLogin();
-                    },
-                    child: const Text(
-                      'Logout',
-                      style: TextStyle(fontSize: 30, color: Colors.black),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      BlocProvider.of<UserCubit>(context).goToPassChange();
-                    },
-                    child: const Text(
-                      'Change Password',
-                      style: TextStyle(fontSize: 30, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              const ListBlocBuilder(),
+              const MenuWidget(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class MenuWidget extends StatelessWidget {
+  const MenuWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton(
+          onPressed: () {
+            BlocProvider.of<UserCubit>(context).goToLogin();
+          },
+          child: const Text(
+            'Logout',
+            style: TextStyle(fontSize: 30, color: Colors.black),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            BlocProvider.of<UserCubit>(context).goToPassChange();
+          },
+          child: const Text(
+            'Change Password',
+            style: TextStyle(fontSize: 30, color: Colors.black),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ListBlocBuilder extends StatelessWidget {
+  const ListBlocBuilder({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UserCubit, UserState>(
+      builder: (context, state) {
+        if (state is UserLogin) {
+          return SizedBox(
+            width: 1500,
+            height: 500,
+            child: ListView(
+              children: state.list
+                  .map(
+                    (password) => MyListView(
+                      login: password.login,
+                      web: password.web,
+                      description: password.description,
+                      password: password.password,
+                      visable: state.visable[password.id]!,
+                      salt: state.user.salt,
+                      id: password.id,
+                      func: () => BlocProvider.of<UserCubit>(context)
+                          .deletePassword(password.id),
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+        } else {
+          return const Text('');
+        }
+      },
     );
   }
 }

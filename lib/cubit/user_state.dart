@@ -7,9 +7,13 @@ class UserLogin extends UserState {
   UserLogin(
     this.user,
     this.list,
-  );
+  ) {
+    visable = {for (var password in list) password.id: false};
+  }
   final User user;
   final List<Password> list;
+  late Map<int, bool> visable;
+
   @override
   List<Object?> get props => [user, list];
 }
