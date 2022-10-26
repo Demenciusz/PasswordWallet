@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/encrypter.dart';
-import 'mycheckbox.dart';
 
 class MyListView extends StatefulWidget {
   MyListView({

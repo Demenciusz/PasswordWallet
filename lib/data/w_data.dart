@@ -68,6 +68,19 @@ class WDatabase extends _$WDatabase {
     return (select(users)).get();
   }
 
+  Future<int> removeAllPasswords(int id) {
+    return (delete(passwords)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  Future<int> changeUserPassword({
+    required int id,
+    required String text,
+    required String salt,
+  }) async {
+    return (update(users)..where((tbl) => tbl.id.equals(id)))
+        .write(UsersCompanion(passwordH: Value(text), salt: Value(salt)));
+  }
+
   @override
   int get schemaVersion => 3;
 

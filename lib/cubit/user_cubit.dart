@@ -21,8 +21,10 @@ class UserCubit extends Cubit<UserState> {
       return (state as UserAddingPass).user;
     } else if (state is UserRef) {
       return (state as UserRef).user;
-    } else
-      return null;
+    } else if (state is UserChangePass) {
+      return (state as UserChangePass).user;
+    }
+    return null;
   }
 
   List<Password>? get userList {
@@ -160,6 +162,11 @@ class UserCubit extends Cubit<UserState> {
     emit(UserLogin(userData!, passwords));
   }
 
+  Future<void> goToPassChange() async {
+    final passwords = await database.getAllUserPasswords(userData!.id);
+    emit(UserChangePass(userData!, passwords));
+  }
+
   Future<void> addPassword({
     required String login,
     required String password,
@@ -204,5 +211,69 @@ class UserCubit extends Cubit<UserState> {
     await database.removePasswordById(id);
 
     emit(UserRef(userData!, userList!));
+  }
+
+  Future<void> changeUserPassword({
+    required String oldPassword,
+    required String newPassword,
+    required BuildContext context,
+  }) async {
+    try {
+      final salt = Encrypter.generateSalt();
+      String zm;
+      if (userData!.sha) {
+        zm = Encrypter.makeSha('${userData!.salt}$pepper$oldPassword');
+      } else {
+        zm = Encrypter.makeHMAC(oldPassword, userData!.salt);
+      }
+      if (zm != userData!.passwordH) {
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('ERROR'),
+            content: const Text('Old password is not corect'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              )
+            ],
+          ),
+        );
+        throw Exception();
+      } else {
+        if (userData!.sha) {
+          zm = Encrypter.makeSha('$salt$pepper$newPassword');
+        } else {
+          zm = Encrypter.makeHMAC(newPassword, salt);
+        }
+        final list = await database.getAllUserPasswords(userData!.id);
+        List<String> decrypt = [];
+        List<Password> newPass = [];
+        await database.removeAllPasswords(userData!.id);
+        await database.changeUserPassword(
+            id: userData!.id, text: zm, salt: salt);
+        for (int i = 0; i < list.length; i++) {
+          decrypt.add(Encrypter.decryptPass(list[i].password, userData!.salt));
+          newPass.add(list[i]
+              .copyWith(password: Encrypter.encryptPass(decrypt[i], salt)));
+          await database.addPassword(
+            PasswordsCompanion(
+              login: Value(newPass[i].login),
+              password: Value(newPass[i].password),
+              web: Value(newPass[i].web),
+              description: Value(newPass[i].description),
+              userId: Value(userData!.id),
+            ),
+          );
+        }
+        emit(UserLoggedOut());
+      }
+    } catch (e, s) {
+      log(
+        'Error while changing password',
+        stackTrace: s,
+      );
+    }
   }
 }

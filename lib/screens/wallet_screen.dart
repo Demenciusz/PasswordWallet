@@ -2,7 +2,6 @@ import 'package:bsi/cubit/user_cubit.dart';
 import 'package:bsi/domain/encrypter.dart';
 import 'package:bsi/domain/show_hash.dart';
 import 'package:bsi/screens/widgets/my_listview.dart';
-import 'package:bsi/screens/widgets/mycheckbox.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -91,10 +90,12 @@ class _WalletScreenState extends State<WalletScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print(list);
-                      print(visable);
+                      BlocProvider.of<UserCubit>(context).goToPassChange();
                     },
-                    child: const Text('Co'),
+                    child: const Text(
+                      'Change Password',
+                      style: TextStyle(fontSize: 30, color: Colors.black),
+                    ),
                   )
                 ],
               ),

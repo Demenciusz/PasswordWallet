@@ -44,3 +44,13 @@ class UserRef extends UserState {
   final List<Password> list;
   List<Object?> get props => [user, list];
 }
+
+class UserChangePass extends UserState {
+  UserChangePass(
+    this.user,
+    this.list,
+  );
+  final User user;
+  final List<Password> list;
+  List<Object?> get props => [user, list];
+}
