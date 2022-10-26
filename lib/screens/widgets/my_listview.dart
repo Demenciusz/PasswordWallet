@@ -13,6 +13,7 @@ class MyListView extends StatefulWidget {
     required this.visable,
     required this.salt,
     required this.id,
+    required this.func,
   });
 
   bool visable;
@@ -22,6 +23,7 @@ class MyListView extends StatefulWidget {
   final String description;
   final String salt;
   final int id;
+  VoidCallback func;
 
   @override
   State<MyListView> createState() => _MyListViewState();
@@ -77,9 +79,7 @@ class _MyListViewState extends State<MyListView> {
           child: Icon(
             Icons.delete,
           ),
-          onPressed: () {
-            BlocProvider.of<UserCubit>(context).deletePassword(widget.id);
-          },
+          onPressed: widget.func,
         ),
       ],
     );

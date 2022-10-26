@@ -1,4 +1,5 @@
 import 'package:bsi/cubit/user_cubit.dart';
+import 'package:bsi/cubit/user_state.dart';
 import 'package:bsi/domain/encrypter.dart';
 import 'package:bsi/domain/show_hash.dart';
 import 'package:bsi/screens/widgets/my_listview.dart';
@@ -21,14 +22,25 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final salt = BlocProvider.of<UserCubit>(context).userData!.salt;
-    final list = BlocProvider.of<UserCubit>(context).userList;
+    String salt = BlocProvider.of<UserCubit>(context).userData!.salt;
+    List<Password>? list = BlocProvider.of<UserCubit>(context).userList;
     final visable = <bool>[];
     list?.forEach(
       (element) {
         visable.add(false);
       },
     );
+    void deletePass() {
+      list = BlocProvider.of<UserCubit>(context).userList;
+      salt = BlocProvider.of<UserCubit>(context).userData!.salt;
+      visable.clear();
+      list?.forEach(
+        (element) {
+          visable.add(false);
+        },
+      );
+    }
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
@@ -59,18 +71,29 @@ class _WalletScreenState extends State<WalletScreen> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: list != null
-                    ? ListView.builder(
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          return MyListView(
-                            login: list[index].login,
-                            web: list[index].web,
-                            description: list[index].description,
-                            password: list[index].password,
-                            visable: visable[index],
-                            salt: salt,
-                            id: list[index].id,
+                child: list!.length != 0
+                    ? BlocBuilder<UserCubit, UserState>(
+                        builder: (context, state) {
+                          return ListView.builder(
+                            itemCount: list!.length,
+                            itemBuilder: (context, index) {
+                              return MyListView(
+                                login: list![index].login,
+                                web: list![index].web,
+                                description: list![index].description,
+                                password: list![index].password,
+                                visable: visable[index],
+                                salt: salt,
+                                id: list![index].id,
+                                func: () {
+                                  setState(() {
+                                    BlocProvider.of<UserCubit>(context)
+                                        .deletePassword(list![index].id);
+                                    deletePass();
+                                  });
+                                },
+                              );
+                            },
                           );
                         },
                       )
@@ -96,7 +119,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       'Change Password',
                       style: TextStyle(fontSize: 30, color: Colors.black),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
