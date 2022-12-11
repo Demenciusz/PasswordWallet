@@ -48,9 +48,6 @@ class BuilderWidget extends StatelessWidget {
         if (state is UserAddingPass) {
           return const AddPassScreen();
         }
-        /* if (state is UserRef) {
-          return const ref();
-        }*/
         if (state is UserChangePass) {
           return const ChangePassword();
         }

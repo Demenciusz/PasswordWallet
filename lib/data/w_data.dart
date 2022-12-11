@@ -22,6 +22,19 @@ class Passwords extends Table {
   TextColumn get description => text()();
 }
 
+@DataClassName('LoginIp')
+class LoginIp extends Table {
+  TextColumn get addresIp => text()();
+  DateTimeColumn get lastLogIn => dateTime()();
+}
+
+@DataClassName('LoginUser')
+class LoginUser extends Table {
+  TextColumn get userId => text()();
+  DateTimeColumn get lastLogin => dateTime()();
+  DateTimeColumn get lastFailedLogin => dateTime()();
+}
+
 @DriftDatabase(tables: [Users, Passwords])
 class WDatabase extends _$WDatabase {
   WDatabase() : super(WebDatabase('database'));

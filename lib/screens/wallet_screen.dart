@@ -43,7 +43,7 @@ class _WalletScreenState extends State<WalletScreen> {
             style: TextStyle(fontSize: 30, color: Colors.black),
           ),
           onPressed: () {
-            BlocProvider.of<UserCubit>(context).addPassPage();
+            userCubit.addPassPage();
           },
         ),
       ),
@@ -76,13 +76,16 @@ class MenuWidget extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TextButton(
-          onPressed: () {
-            BlocProvider.of<UserCubit>(context).goToLogin();
-          },
-          child: const Text(
-            'Logout',
-            style: TextStyle(fontSize: 30, color: Colors.black),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: TextButton(
+            onPressed: () {
+              BlocProvider.of<UserCubit>(context).goToLogin();
+            },
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontSize: 30, color: Colors.black),
+            ),
           ),
         ),
         TextButton(
@@ -110,8 +113,8 @@ class ListBlocBuilder extends StatelessWidget {
       builder: (context, state) {
         if (state is UserLogin) {
           return SizedBox(
-            width: 1500,
-            height: 500,
+            width: MediaQuery.of(context).size.width * 0.7,
+            height: MediaQuery.of(context).size.height * 0.7,
             child: ListView(
               children: state.list
                   .map(
