@@ -1,15 +1,13 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:bsi/constant.dart';
 import 'package:bsi/cubit/user_state.dart';
 import 'package:bsi/data/w_data.dart';
 import 'package:bsi/domain/encrypter.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-import 'package:path/path.dart';
-import 'package:bsi/domain/encrypter.dart';
-import 'package:bsi/constant.dart';
+import 'package:get_ip_address/get_ip_address.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserLoggedOut());
@@ -45,6 +43,7 @@ class UserCubit extends Cubit<UserState> {
   }) async {
     try {
       final user = await database.getUserByLogin(login);
+
       print('mam usera');
       String zm;
       if (user.sha) {
@@ -77,9 +76,7 @@ class UserCubit extends Cubit<UserState> {
       print('pass cor');
       emit(UserLogin(user, passwords));
       print(UserCubit());
-    } catch (e) {
-      print('no nie działa');
-    }
+    } catch (e) {}
   }
 
   Future<void> register({

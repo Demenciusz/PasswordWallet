@@ -612,13 +612,268 @@ class $PasswordsTable extends Passwords
   }
 }
 
+class LoginIp extends DataClass implements Insertable<LoginIp> {
+  final String addresIp;
+  final DateTime lastLogIn;
+  final DateTime lastNoSucces;
+  final int counter;
+  const LoginIp(
+      {required this.addresIp,
+      required this.lastLogIn,
+      required this.lastNoSucces,
+      required this.counter});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['addres_ip'] = Variable<String>(addresIp);
+    map['last_log_in'] = Variable<DateTime>(lastLogIn);
+    map['last_no_succes'] = Variable<DateTime>(lastNoSucces);
+    map['counter'] = Variable<int>(counter);
+    return map;
+  }
+
+  LoginIpsCompanion toCompanion(bool nullToAbsent) {
+    return LoginIpsCompanion(
+      addresIp: Value(addresIp),
+      lastLogIn: Value(lastLogIn),
+      lastNoSucces: Value(lastNoSucces),
+      counter: Value(counter),
+    );
+  }
+
+  factory LoginIp.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LoginIp(
+      addresIp: serializer.fromJson<String>(json['addresIp']),
+      lastLogIn: serializer.fromJson<DateTime>(json['lastLogIn']),
+      lastNoSucces: serializer.fromJson<DateTime>(json['lastNoSucces']),
+      counter: serializer.fromJson<int>(json['counter']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'addresIp': serializer.toJson<String>(addresIp),
+      'lastLogIn': serializer.toJson<DateTime>(lastLogIn),
+      'lastNoSucces': serializer.toJson<DateTime>(lastNoSucces),
+      'counter': serializer.toJson<int>(counter),
+    };
+  }
+
+  LoginIp copyWith(
+          {String? addresIp,
+          DateTime? lastLogIn,
+          DateTime? lastNoSucces,
+          int? counter}) =>
+      LoginIp(
+        addresIp: addresIp ?? this.addresIp,
+        lastLogIn: lastLogIn ?? this.lastLogIn,
+        lastNoSucces: lastNoSucces ?? this.lastNoSucces,
+        counter: counter ?? this.counter,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LoginIp(')
+          ..write('addresIp: $addresIp, ')
+          ..write('lastLogIn: $lastLogIn, ')
+          ..write('lastNoSucces: $lastNoSucces, ')
+          ..write('counter: $counter')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(addresIp, lastLogIn, lastNoSucces, counter);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LoginIp &&
+          other.addresIp == this.addresIp &&
+          other.lastLogIn == this.lastLogIn &&
+          other.lastNoSucces == this.lastNoSucces &&
+          other.counter == this.counter);
+}
+
+class LoginIpsCompanion extends UpdateCompanion<LoginIp> {
+  final Value<String> addresIp;
+  final Value<DateTime> lastLogIn;
+  final Value<DateTime> lastNoSucces;
+  final Value<int> counter;
+  const LoginIpsCompanion({
+    this.addresIp = const Value.absent(),
+    this.lastLogIn = const Value.absent(),
+    this.lastNoSucces = const Value.absent(),
+    this.counter = const Value.absent(),
+  });
+  LoginIpsCompanion.insert({
+    required String addresIp,
+    required DateTime lastLogIn,
+    required DateTime lastNoSucces,
+    required int counter,
+  })  : addresIp = Value(addresIp),
+        lastLogIn = Value(lastLogIn),
+        lastNoSucces = Value(lastNoSucces),
+        counter = Value(counter);
+  static Insertable<LoginIp> custom({
+    Expression<String>? addresIp,
+    Expression<DateTime>? lastLogIn,
+    Expression<DateTime>? lastNoSucces,
+    Expression<int>? counter,
+  }) {
+    return RawValuesInsertable({
+      if (addresIp != null) 'addres_ip': addresIp,
+      if (lastLogIn != null) 'last_log_in': lastLogIn,
+      if (lastNoSucces != null) 'last_no_succes': lastNoSucces,
+      if (counter != null) 'counter': counter,
+    });
+  }
+
+  LoginIpsCompanion copyWith(
+      {Value<String>? addresIp,
+      Value<DateTime>? lastLogIn,
+      Value<DateTime>? lastNoSucces,
+      Value<int>? counter}) {
+    return LoginIpsCompanion(
+      addresIp: addresIp ?? this.addresIp,
+      lastLogIn: lastLogIn ?? this.lastLogIn,
+      lastNoSucces: lastNoSucces ?? this.lastNoSucces,
+      counter: counter ?? this.counter,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (addresIp.present) {
+      map['addres_ip'] = Variable<String>(addresIp.value);
+    }
+    if (lastLogIn.present) {
+      map['last_log_in'] = Variable<DateTime>(lastLogIn.value);
+    }
+    if (lastNoSucces.present) {
+      map['last_no_succes'] = Variable<DateTime>(lastNoSucces.value);
+    }
+    if (counter.present) {
+      map['counter'] = Variable<int>(counter.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LoginIpsCompanion(')
+          ..write('addresIp: $addresIp, ')
+          ..write('lastLogIn: $lastLogIn, ')
+          ..write('lastNoSucces: $lastNoSucces, ')
+          ..write('counter: $counter')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LoginIpsTable extends LoginIps with TableInfo<$LoginIpsTable, LoginIp> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LoginIpsTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _addresIpMeta = const VerificationMeta('addresIp');
+  @override
+  late final GeneratedColumn<String> addresIp = GeneratedColumn<String>(
+      'addres_ip', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _lastLogInMeta = const VerificationMeta('lastLogIn');
+  @override
+  late final GeneratedColumn<DateTime> lastLogIn = GeneratedColumn<DateTime>(
+      'last_log_in', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  final VerificationMeta _lastNoSuccesMeta =
+      const VerificationMeta('lastNoSucces');
+  @override
+  late final GeneratedColumn<DateTime> lastNoSucces = GeneratedColumn<DateTime>(
+      'last_no_succes', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  final VerificationMeta _counterMeta = const VerificationMeta('counter');
+  @override
+  late final GeneratedColumn<int> counter = GeneratedColumn<int>(
+      'counter', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [addresIp, lastLogIn, lastNoSucces, counter];
+  @override
+  String get aliasedName => _alias ?? 'login_ips';
+  @override
+  String get actualTableName => 'login_ips';
+  @override
+  VerificationContext validateIntegrity(Insertable<LoginIp> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('addres_ip')) {
+      context.handle(_addresIpMeta,
+          addresIp.isAcceptableOrUnknown(data['addres_ip']!, _addresIpMeta));
+    } else if (isInserting) {
+      context.missing(_addresIpMeta);
+    }
+    if (data.containsKey('last_log_in')) {
+      context.handle(
+          _lastLogInMeta,
+          lastLogIn.isAcceptableOrUnknown(
+              data['last_log_in']!, _lastLogInMeta));
+    } else if (isInserting) {
+      context.missing(_lastLogInMeta);
+    }
+    if (data.containsKey('last_no_succes')) {
+      context.handle(
+          _lastNoSuccesMeta,
+          lastNoSucces.isAcceptableOrUnknown(
+              data['last_no_succes']!, _lastNoSuccesMeta));
+    } else if (isInserting) {
+      context.missing(_lastNoSuccesMeta);
+    }
+    if (data.containsKey('counter')) {
+      context.handle(_counterMeta,
+          counter.isAcceptableOrUnknown(data['counter']!, _counterMeta));
+    } else if (isInserting) {
+      context.missing(_counterMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  LoginIp map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LoginIp(
+      addresIp: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}addres_ip'])!,
+      lastLogIn: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_log_in'])!,
+      lastNoSucces: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_no_succes'])!,
+      counter: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}counter'])!,
+    );
+  }
+
+  @override
+  $LoginIpsTable createAlias(String alias) {
+    return $LoginIpsTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$WDatabase extends GeneratedDatabase {
   _$WDatabase(QueryExecutor e) : super(e);
   late final $UsersTable users = $UsersTable(this);
   late final $PasswordsTable passwords = $PasswordsTable(this);
+  late final $LoginIpsTable loginIps = $LoginIpsTable(this);
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [users, passwords];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [users, passwords, loginIps];
 }

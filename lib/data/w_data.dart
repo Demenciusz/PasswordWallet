@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift/web.dart';
+import 'package:get_ip_address/get_ip_address.dart';
 
 part 'w_data.g.dart';
 
@@ -23,9 +24,11 @@ class Passwords extends Table {
 }
 
 @DataClassName('LoginIp')
-class LoginIp extends Table {
+class LoginIps extends Table {
   TextColumn get addresIp => text()();
   DateTimeColumn get lastLogIn => dateTime()();
+  DateTimeColumn get lastNoSucces => dateTime()();
+  IntColumn get counter => integer()();
 }
 
 @DataClassName('LoginUser')
@@ -35,9 +38,51 @@ class LoginUser extends Table {
   DateTimeColumn get lastFailedLogin => dateTime()();
 }
 
-@DriftDatabase(tables: [Users, Passwords])
+@DriftDatabase(tables: [Users, Passwords, LoginIps])
 class WDatabase extends _$WDatabase {
   WDatabase() : super(WebDatabase('database'));
+
+  Future<int> addAddresIp(LoginIpsCompanion entry) async {
+    return into(loginIps).insert(entry);
+  }
+
+  Future<LoginIp> getIpAddressByIp(String ip) async {
+    final loginIp = await (select(loginIps)
+          ..where(
+            (tbl) => tbl.addresIp.equals(ip),
+          )
+          ..limit(1))
+        .getSingle();
+    return loginIp;
+  }
+
+  Future<void> changeLoginIpN(String ip, int counter) async {
+    DateTime.now();
+    await (update(loginIps)..where((tbl) => tbl.addresIp.equals(ip))).write(
+      LoginIpsCompanion(
+        counter: Value(counter + 1),
+        lastNoSucces: Value(
+          DateTime.now(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> changeLoginIpS(String ip, int counter) async {
+    DateTime.now();
+    await (update(loginIps)..where((tbl) => tbl.addresIp.equals(ip))).write(
+      LoginIpsCompanion(
+        counter: Value(0),
+        lastLogIn: Value(
+          DateTime.now(),
+        ),
+      ),
+    );
+  }
+
+  Future<List<LoginIp>> getAllAddress() async {
+    return select(loginIps).get();
+  }
 
   Future<int> addUser(UsersCompanion entry) {
     return into(users).insert(entry);

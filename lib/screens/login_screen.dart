@@ -1,9 +1,11 @@
 import 'package:bsi/cubit/user_cubit.dart';
 import 'package:bsi/cubit/user_state.dart';
+import 'package:bsi/domain/ip_manager.dart';
 import 'package:bsi/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
+import 'package:get_ip_address/get_ip_address.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -90,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 200,
               child: TextButton(
                 onPressed: () {
+                  //IpManager.addIp();
                   final login = loginText.text;
                   final password = passwordText1.text;
                   print(login);
@@ -117,6 +120,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Register',
                   style: TextStyle(fontSize: 30, color: Colors.black),
                 ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+              width: 30,
+              child: TextButton(
+                child: Text('x'),
+                onPressed: () async {
+                  IpManager.addIp();
+                },
               ),
             )
           ],
