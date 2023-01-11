@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextButton(
                 child: Text('x'),
                 onPressed: () async {
-                  IpManager.printIpDB();
+                  BlocProvider.of<UserCubit>(context).resetIp();
                 },
               ),
             )

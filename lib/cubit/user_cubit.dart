@@ -37,6 +37,11 @@ class UserCubit extends Cubit<UserState> {
   }
 
   WDatabase database = WDatabase();
+  Future<void> resetIp() async {
+    final ipAddress = IpAddress(type: RequestType.json);
+    final dynamic data = await ipAddress.getIpAddress();
+    await database.changeLoginIpS(data['ip'].toString());
+  }
 
   Future<void> login({
     required String login,
@@ -51,9 +56,26 @@ class UserCubit extends Cubit<UserState> {
       try {
         loginIp = await database.getIpAddressByIp(data['ip'].toString());
       } catch (e) {
-        Exception('Nie udało się pobrać pobrać obiektu ip z bazy');
+        throw Exception('Nie udało się pobrać pobrać obiektu ip z bazy');
       }
-      print('mam usera');
+      if (loginIp.counter == 3) {
+        final time = loginIp.lastNoSucces.add(const Duration(seconds: 5));
+        if (time.isAfter(DateTime.now())) {
+          throw Exception('czas');
+        }
+        print('d:4');
+      }
+      if (loginIp.counter == 4) {
+        final time = loginIp.lastNoSucces.add(const Duration(seconds: 10));
+        if (time.isAfter(DateTime.now())) {
+          throw Exception('czas');
+        }
+      }
+      print('d:5');
+      if (loginIp.counter > 4) {
+        throw Exception('ban');
+      }
+      print('d:1');
       String zm;
       if (user.sha) {
         zm = Encrypter.makeSha('${user.salt}$pepper$password');
@@ -63,6 +85,7 @@ class UserCubit extends Cubit<UserState> {
         zm = Encrypter.makeHMAC(password, user.salt);
         print('hmac');
       }
+      print('d:2');
 
       if (user.passwordH != zm) {
         await showDialog<void>(
@@ -80,35 +103,31 @@ class UserCubit extends Cubit<UserState> {
         );
         throw Exception();
       }
-      print('pass');
+      print('d:3');
       final passwords = await database.getAllUserPasswords(user.id);
-      print('pass cor');
-      if (loginIp.counter == 3) {
-        final time = loginIp.lastNoSucces.add(const Duration(seconds: 5));
-        if (time.isAfter(DateTime.now())) {
-          throw Exception('czas');
-        }
-      }
-      if (loginIp.counter == 4) {
-        final time = loginIp.lastNoSucces.add(const Duration(seconds: 10));
-        if (time.isAfter(DateTime.now())) {
-          throw Exception('czas');
-        }
-      }
-      if (loginIp.counter > 4) {
-        throw Exception('ban');
-      }
+
+      print('d:6');
       await database.changeLoginIpS(data['ip'].toString());
+      print('d:7');
       emit(UserLogin(user, passwords));
       print(UserCubit());
     } catch (exp) {
-      if (exp.toString() == 'czas') {
+      print('--------------------------- $exp ---------------------');
+      String a = exp.toString();
+      print(a);
+      if (a == 'Exception: ban') {
         await Fluttertoast.showToast(
-          msg: 'masz bana',
-          gravity: ToastGravity.BOTTOM_RIGHT,
-        );
+            msg: 'masz bana',
+            gravity: ToastGravity.BOTTOM_RIGHT,
+            toastLength: Toast.LENGTH_SHORT);
       }
-      if (exp.toString() != 'czas') {
+      if (a == 'Exception: czas') {
+        await Fluttertoast.showToast(
+            msg: 'ban czasowy',
+            gravity: ToastGravity.BOTTOM_RIGHT,
+            toastLength: Toast.LENGTH_SHORT);
+      }
+      if (a != 'Exception: ban' && a != 'Exception: czas') {
         try {
           final ipAddress = IpAddress(type: RequestType.json);
           final dynamic data = await ipAddress.getIpAddress();
@@ -117,6 +136,7 @@ class UserCubit extends Cubit<UserState> {
           await database.changeLoginIpN(data['ip'].toString(), loginIp.counter);
           loginIp = await database.getIpAddressByIp(data['ip'].toString());
           print(loginIp.counter);
+          print('co sie dzieje');
         } catch (e) {
           print(e);
         }

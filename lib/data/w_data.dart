@@ -71,7 +71,7 @@ class WDatabase extends _$WDatabase {
     DateTime.now();
     await (update(loginIps)..where((tbl) => tbl.addresIp.equals(ip))).write(
       LoginIpsCompanion(
-        counter: Value(0),
+        counter: const Value(0),
         lastLogIn: Value(
           DateTime.now(),
         ),
