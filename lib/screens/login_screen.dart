@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     loginText = TextEditingController();
     passwordText1 = TextEditingController();
+    IpManager.addIp();
   }
 
   @override
@@ -92,7 +93,6 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 200,
               child: TextButton(
                 onPressed: () {
-                  //IpManager.addIp();
                   final login = loginText.text;
                   final password = passwordText1.text;
                   print(login);
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextButton(
                 child: Text('x'),
                 onPressed: () async {
-                  IpManager.addIp();
+                  IpManager.printIpDB();
                 },
               ),
             )

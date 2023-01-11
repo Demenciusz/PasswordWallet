@@ -7,6 +7,8 @@ import 'package:bsi/data/w_data.dart';
 import 'package:bsi/domain/encrypter.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get_ip_address/get_ip_address.dart';
 
 class UserCubit extends Cubit<UserState> {
@@ -43,7 +45,14 @@ class UserCubit extends Cubit<UserState> {
   }) async {
     try {
       final user = await database.getUserByLogin(login);
-
+      final ipAddress = IpAddress(type: RequestType.json);
+      final dynamic data = await ipAddress.getIpAddress();
+      late LoginIp loginIp;
+      try {
+        loginIp = await database.getIpAddressByIp(data['ip'].toString());
+      } catch (e) {
+        Exception('Nie udało się pobrać pobrać obiektu ip z bazy');
+      }
       print('mam usera');
       String zm;
       if (user.sha) {
@@ -74,9 +83,47 @@ class UserCubit extends Cubit<UserState> {
       print('pass');
       final passwords = await database.getAllUserPasswords(user.id);
       print('pass cor');
+      if (loginIp.counter == 3) {
+        final time = loginIp.lastNoSucces.add(const Duration(seconds: 5));
+        if (time.isAfter(DateTime.now())) {
+          throw Exception('czas');
+        }
+      }
+      if (loginIp.counter == 4) {
+        final time = loginIp.lastNoSucces.add(const Duration(seconds: 10));
+        if (time.isAfter(DateTime.now())) {
+          throw Exception('czas');
+        }
+      }
+      if (loginIp.counter > 4) {
+        throw Exception('ban');
+      }
+      await database.changeLoginIpS(data['ip'].toString());
       emit(UserLogin(user, passwords));
       print(UserCubit());
-    } catch (e) {}
+    } catch (exp) {
+      if (exp.toString() == 'czas') {
+        await Fluttertoast.showToast(
+          msg: 'masz bana',
+          gravity: ToastGravity.BOTTOM_RIGHT,
+        );
+      }
+      if (exp.toString() != 'czas') {
+        try {
+          final ipAddress = IpAddress(type: RequestType.json);
+          final dynamic data = await ipAddress.getIpAddress();
+          LoginIp loginIp;
+          loginIp = await database.getIpAddressByIp(data['ip'].toString());
+          await database.changeLoginIpN(data['ip'].toString(), loginIp.counter);
+          loginIp = await database.getIpAddressByIp(data['ip'].toString());
+          print(loginIp.counter);
+        } catch (e) {
+          print(e);
+        }
+      }
+
+      print(exp);
+    }
   }
 
   Future<void> register({
@@ -138,7 +185,7 @@ class UserCubit extends Cubit<UserState> {
 
       emit(UserLoggedOut());
     } catch (e) {
-      print('cos sie zjebało');
+      print(e);
     }
   }
 

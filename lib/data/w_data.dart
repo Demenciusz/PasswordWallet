@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:drift/web.dart';
-import 'package:get_ip_address/get_ip_address.dart';
 
 part 'w_data.g.dart';
 
@@ -68,7 +67,7 @@ class WDatabase extends _$WDatabase {
     );
   }
 
-  Future<void> changeLoginIpS(String ip, int counter) async {
+  Future<void> changeLoginIpS(String ip) async {
     DateTime.now();
     await (update(loginIps)..where((tbl) => tbl.addresIp.equals(ip))).write(
       LoginIpsCompanion(
