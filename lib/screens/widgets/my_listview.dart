@@ -76,11 +76,17 @@ class _MyListViewState extends State<MyListView> {
           },
         ),
         TextButton(
-          child: Icon(
+          onPressed: widget.func,
+          child: const Icon(
             Icons.delete,
           ),
-          onPressed: widget.func,
         ),
+        TextButton(
+          onPressed: () {
+            BlocProvider.of<UserCubit>(context).goToShare(widget.id);
+          },
+          child: const Icon(Icons.share),
+        )
       ],
     );
   }

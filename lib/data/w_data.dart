@@ -20,6 +20,7 @@ class Passwords extends Table {
   TextColumn get password => text()();
   TextColumn get web => text()();
   TextColumn get description => text()();
+  TextColumn get share => text()();
 }
 
 @DataClassName('LoginIp')
@@ -53,6 +54,21 @@ class WDatabase extends _$WDatabase {
           ..limit(1))
         .getSingle();
     return loginIp;
+  }
+
+  Future<String> getShare(int id) async {
+    final share = await (select(passwords)
+          ..where((tbl) => tbl.id.equals(id))
+          ..limit(1))
+        .getSingle();
+    return share.share;
+  }
+
+  Future<void> sharePass(int id, String text) async {
+    await (update(passwords)..where((tbl) => tbl.id.equals(id)))
+        .write(PasswordsCompanion(
+      share: Value(text),
+    ));
   }
 
   Future<void> changeLoginIpN(String ip, int counter) async {
@@ -109,6 +125,21 @@ class WDatabase extends _$WDatabase {
 
   Future<List<Password>> getAllUserPasswords(int userId) {
     return (select(passwords)..where((tbl) => tbl.userId.equals(userId))).get();
+  }
+
+  Future<List<Password>> getSharedPasswords(String userName) async {
+    List<Password> pass = await select(passwords).get();
+    List<Password> passR = [];
+    pass.forEach((element) {
+      var x = element.share.split(',');
+      print(x.length);
+      for (var user in x) {
+        if (user == userName) {
+          passR.add(element);
+        }
+      }
+    });
+    return passR;
   }
 
   void removePassword(Password password) {

@@ -23,6 +23,8 @@ class UserCubit extends Cubit<UserState> {
       return (state as UserRef).user;
     } else if (state is UserChangePass) {
       return (state as UserChangePass).user;
+    } else if (state is UserSharePass) {
+      return (state as UserSharePass).user;
     }
     return null;
   }
@@ -32,8 +34,27 @@ class UserCubit extends Cubit<UserState> {
       return (state as UserLogin).list;
     } else if (state is UserAddingPass) {
       return (state as UserAddingPass).list;
+    } else if (state is UserSharePass) {
+      return (state as UserSharePass).list;
     }
     return null;
+  }
+
+  int? get id {
+    if (state is UserSharePass) {
+      return (state as UserSharePass).passId;
+    }
+    return null;
+  }
+
+  List<Password> get userShareList {
+    if (state is UserLogin) {
+      return (state as UserLogin).shareList;
+    }
+    if (state is UserSharePass) {
+      return (state as UserSharePass).shareList;
+    }
+    return [];
   }
 
   WDatabase database = WDatabase();
@@ -41,6 +62,10 @@ class UserCubit extends Cubit<UserState> {
     final ipAddress = IpAddress(type: RequestType.json);
     final dynamic data = await ipAddress.getIpAddress();
     await database.changeLoginIpS(data['ip'].toString());
+  }
+
+  Future<String> getShare(int id) async {
+    return await database.getShare(id);
   }
 
   Future<void> login({
@@ -105,11 +130,12 @@ class UserCubit extends Cubit<UserState> {
       }
       print('d:3');
       final passwords = await database.getAllUserPasswords(user.id);
+      final sharePasswords = await database.getSharedPasswords(user.login);
 
       print('d:6');
       await database.changeLoginIpS(data['ip'].toString());
       print('d:7');
-      emit(UserLogin(user, passwords));
+      emit(UserLogin(user, passwords, sharePasswords));
       print(UserCubit());
     } catch (exp) {
       print('--------------------------- $exp ---------------------');
@@ -117,15 +143,17 @@ class UserCubit extends Cubit<UserState> {
       print(a);
       if (a == 'Exception: ban') {
         await Fluttertoast.showToast(
-            msg: 'masz bana',
-            gravity: ToastGravity.BOTTOM_RIGHT,
-            toastLength: Toast.LENGTH_SHORT);
+          msg: 'masz bana',
+          gravity: ToastGravity.BOTTOM_RIGHT,
+          toastLength: Toast.LENGTH_SHORT,
+        );
       }
       if (a == 'Exception: czas') {
         await Fluttertoast.showToast(
-            msg: 'ban czasowy',
-            gravity: ToastGravity.BOTTOM_RIGHT,
-            toastLength: Toast.LENGTH_SHORT);
+          msg: 'ban czasowy',
+          gravity: ToastGravity.BOTTOM_RIGHT,
+          toastLength: Toast.LENGTH_SHORT,
+        );
       }
       if (a != 'Exception: ban' && a != 'Exception: czas') {
         try {
@@ -223,12 +251,25 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> ref() async {
     final passwords = await database.getAllUserPasswords(userData!.id);
-    emit(UserLogin(userData!, passwords));
+    emit(UserLogin(userData!, passwords, userShareList));
   }
 
   Future<void> goToPassChange() async {
     final passwords = await database.getAllUserPasswords(userData!.id);
     emit(UserChangePass(userData!, passwords));
+  }
+
+  Future<void> goToShare(int id) async {
+    emit(UserSharePass(userData!, id, userList!, userShareList));
+  }
+
+  Future<void> sharePass(int id, String text) async {
+    try {
+      await database.sharePass(id, text);
+    } catch (e) {
+      print(e);
+    }
+    emit(UserLogin(userData!, userList!, userShareList));
   }
 
   Future<void> addPassword({
@@ -262,10 +303,11 @@ class UserCubit extends Cubit<UserState> {
         web: Value(web),
         description: Value(description),
         userId: Value(userData!.id),
+        share: Value(''),
       );
       await database.addPassword(comp);
       final passwords = await database.getAllUserPasswords(userData!.id);
-      emit(UserLogin(userData!, passwords));
+      emit(UserLogin(userData!, passwords, userShareList));
     } catch (e) {
       print('Nie dodano hasła heh');
     }
@@ -274,7 +316,7 @@ class UserCubit extends Cubit<UserState> {
   Future<void> deletePassword(int id) async {
     await database.removePasswordById(id);
     database.getAllUserPasswords(userData!.id).then((passwords) {
-      emit(UserLogin(userData!, passwords));
+      emit(UserLogin(userData!, passwords, userShareList));
     });
   }
 

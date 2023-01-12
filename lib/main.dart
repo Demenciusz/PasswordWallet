@@ -2,6 +2,7 @@ import 'package:bsi/cubit/user_cubit.dart';
 import 'package:bsi/screens/add_pass_screen.dart';
 import 'package:bsi/screens/change_password.dart';
 import 'package:bsi/screens/ref.dart';
+import 'package:bsi/screens/share_pass_screen.dart';
 import 'package:bsi/screens/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bsi/screens/login_screen.dart';
@@ -50,6 +51,9 @@ class BuilderWidget extends StatelessWidget {
         }
         if (state is UserChangePass) {
           return const ChangePassword();
+        }
+        if (state is UserSharePass) {
+          return SharePassScreen();
         }
         return const LoginScreen();
       },

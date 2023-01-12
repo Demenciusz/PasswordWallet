@@ -50,17 +50,13 @@ class _WalletScreenState extends State<WalletScreen> {
       appBar: AppBar(
         title: const Text('PASSWORDWALLET'),
       ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const ListBlocBuilder(),
-              const MenuWidget(),
-            ],
-          ),
-        ),
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ListBlocBuilder(),
+          SharedPasswords(),
+          const MenuWidget(),
+        ],
       ),
     );
   }
@@ -112,6 +108,8 @@ class ListBlocBuilder extends StatelessWidget {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserLogin) {
+          print('Lista share');
+          print(state.shareList.length);
           return SizedBox(
             width: MediaQuery.of(context).size.width * 0.7,
             height: MediaQuery.of(context).size.height * 0.7,
@@ -136,6 +134,40 @@ class ListBlocBuilder extends StatelessWidget {
         } else {
           return const Text('');
         }
+      },
+    );
+  }
+}
+
+class SharedPasswords extends StatelessWidget {
+  SharedPasswords({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Password> list = BlocProvider.of<UserCubit>(context).userShareList;
+    return BlocBuilder<UserCubit, UserState>(
+      builder: (context, state) {
+        if (state is UserLogin) {
+          return Flexible(
+            child: ListView.builder(
+              itemCount: list.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Column(children: [
+                  Text(list[index].description),
+                  Text(list[index].web),
+                  Text(
+                    Encrypter.encryptPass(
+                      list[index].password,
+                      state.user.salt,
+                    ),
+                  )
+                ]);
+              },
+            ),
+          );
+        }
+        return Text('');
       },
     );
   }
